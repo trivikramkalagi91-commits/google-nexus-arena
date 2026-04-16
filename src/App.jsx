@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Map as MapIcon, Globe, Info } from 'lucide-react';
+import { useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Dashboard from './components/Dashboard';
 import NexusMap from './components/NexusMap';
@@ -8,34 +9,32 @@ import Ledger from './components/Ledger';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [persona, setPersona] = useState('attendee'); // 'attendee' | 'speaker'
+  const [persona, setPersona] = useState('attendee'); 
   const [ambientNote, setAmbientNote] = useState(null);
+  const { lang, setLang, t } = useLanguage();
 
-  // Luxurious Animation Variants
   const pageVariants = {
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.19, 1, 0.22, 1] } },
     exit: { opacity: 0, y: -10, transition: { duration: 0.8, ease: [0.19, 1, 0.22, 1] } }
   };
 
-  // Spatial Resonance Simulation
   useEffect(() => {
     const timer = setTimeout(() => {
       setAmbientNote({
-        title: 'SPATIAL RESONANCE',
+        title: t('resonanceTitle'),
         message: persona === 'speaker' 
-          ? 'Event Organizer Sarah is entering Stage 01. Tech check recommended.'
-          : 'Marcus Stone from your Ledger is nearby in the Coffee Lab.'
+          ? t('speakerResonance')
+          : t('attendeeResonance')
       });
     }, 4000);
 
     return () => clearTimeout(timer);
-  }, [persona]);
+  }, [persona, lang]); // Re-trigger on language change to update message
 
   return (
     <div className="app-layout layer-0">
       
-      {/* Persona Switcher - Demonstration of intelligence */}
       <div className="persona-switcher">
         <button 
           className={`persona-btn ${persona === 'attendee' ? 'active' : ''}`}
@@ -69,7 +68,6 @@ function App() {
         </AnimatePresence>
       </main>
 
-      {/* Floating Spatial Notification */}
       <AnimatePresence>
         {ambientNote && (
           <motion.div 
@@ -104,9 +102,23 @@ function App() {
           Aether Physical Experience • 2026 Summit
         </p>
         <div style={{ display: 'flex', gap: '3rem', alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', opacity: 0.5 }}>
-            <Globe size={14} />
-            <span className="sans" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>English</span>
+          <div 
+            style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}
+          >
+            <button 
+              onClick={() => setLang('en')}
+              className="sans" 
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', opacity: lang === 'en' ? 1 : 0.4, fontWeight: lang === 'en' ? 700 : 400 }}
+            >
+              EN
+            </button>
+            <button 
+              onClick={() => setLang('hi')}
+              className="sans" 
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', opacity: lang === 'hi' ? 1 : 0.4, fontWeight: lang === 'hi' ? 700 : 400 }}
+            >
+              हिन्दी
+            </button>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', opacity: 0.5 }}>
             <Info size={14} />

@@ -1,16 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Bookmark, Download } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const Ledger = ({ persona }) => {
-  const isSpeaker = persona === 'speaker';
+  const { t } = useLanguage();
 
   const sessions = [
-    { time: '09:00 AM', title: 'Arrival & Morning Reflection', speaker: 'Nexus Staff', location: 'The Atrium' },
-    { time: '10:30 AM', title: isSpeaker ? 'Spatial Ethics (Your Stage)' : 'Spatial Ethics in the AI Age', speaker: 'Dr. Elena Vane', location: 'Hall A' },
-    { time: '11:00 AM', title: isSpeaker ? 'Speaker Lounge Q&A' : 'The Silent Gallery Tour', speaker: 'Marcus Stone', location: 'Atrium' },
-    { time: '12:30 PM', title: 'Communal Lunch', speaker: '-', location: 'The Square' },
-    { time: '01:30 PM', title: 'Curating the Future', speaker: 'Sarah Lylat', location: 'Gallery 04' },
+    { time: '09:00 AM', titleKey: 'temporalLedger', speaker: 'Nexus Staff', location: 'The Atrium' },
+    { time: '10:30 AM', titleKey: 'ethicTitle', speaker: 'Dr. Elena Vane', location: 'Hall A' },
+    { time: '11:00 AM', titleKey: 'temporalLedger', speaker: 'Marcus Stone', location: 'Atrium' },
   ];
 
   return (
@@ -22,7 +21,7 @@ const Ledger = ({ persona }) => {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: '3rem', borderBottom: '1px solid rgba(26,26,26,0.05)', marginBottom: '4rem' }}>
         <div>
-          <h3 className="serif" style={{ marginBottom: '1rem' }}>TEMPORAL LEDGER</h3>
+          <h3 className="serif" style={{ marginBottom: '1rem' }}>{t('temporalLedger')}</h3>
           <h1 className="serif">April 16, 2026</h1>
         </div>
         <div style={{ display: 'flex', gap: '2rem' }}>
@@ -52,7 +51,7 @@ const Ledger = ({ persona }) => {
               <p className="sans" style={{ fontSize: '1rem', fontWeight: 600 }}>{session.time}</p>
             </div>
             <div style={{ flex: 2 }}>
-              <h2 className="serif" style={{ fontSize: '1.75rem' }}>{session.title}</h2>
+              <h2 className="serif" style={{ fontSize: '1.75rem' }}>{t(session.titleKey)}</h2>
               <p className="sans" style={{ fontSize: '0.875rem', marginTop: '0.5rem', opacity: 0.6 }}>{session.speaker}</p>
             </div>
             <div style={{ flex: 1, textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1rem' }}>
@@ -61,12 +60,6 @@ const Ledger = ({ persona }) => {
             </div>
           </motion.div>
         ))}
-      </div>
-
-      <div className="layer-3" style={{ marginTop: '6rem', padding: '4rem', textAlign: 'center' }}>
-        <p className="serif" style={{ fontSize: '1.5rem', fontStyle: 'italic', maxWidth: '600px', margin: '0 auto', lineHeight: '1.6' }}>
-          "Julian, your temporal path is clear. You have curated a day of focused learning and meaningful interaction."
-        </p>
       </div>
     </motion.div>
   );

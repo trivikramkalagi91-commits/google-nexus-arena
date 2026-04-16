@@ -1,10 +1,12 @@
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 const Navbar = ({ activeTab, setActiveTab }) => {
+  const { t } = useLanguage();
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'nexus', label: 'The Nexus' },
-    { id: 'ledger', label: 'Your Ledger' }
+    { id: 'dashboard', label: t('dashboard') },
+    { id: 'nexus', label: t('nexus') },
+    { id: 'ledger', label: t('ledger') }
   ];
 
   return (
