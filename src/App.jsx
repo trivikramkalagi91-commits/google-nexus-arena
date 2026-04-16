@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-presence'; // Error fixed later
 import { motion as FMotion, AnimatePresence as FAnimatePresence } from 'framer-motion';
 import { Map as MapIcon, Globe, Info, LogOut } from 'lucide-react';
 import { useLanguage } from './context/LanguageContext';
@@ -105,7 +104,7 @@ function App() {
             </div>
           </FMotion.div>
         )}
-      </AnimatePresence>
+      </FAnimatePresence>
 
       <footer className="container" style={{ padding: '4rem 0', borderTop: '1px solid rgba(26,26,26,0.03)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <p className="sans" style={{ fontSize: '0.65rem', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '0.15em' }}>
