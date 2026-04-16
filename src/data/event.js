@@ -2,48 +2,63 @@ export const MASTER_PROGRAM = [
   {
     id: 'A01',
     time: '09:00 AM',
+    isoDate: '20260416T090000',
+    isoDuration: '010000',
     titleKey: 'temporalLedger',
-    location: 'Gateway Atrium',
-    speaker: 'Aether Nexus Staff',
-    type: 'Essential',
-    coordinates: { lat: 28.6149, lng: 77.2423 }
+    location: 'The Sabha (Atrium)',
+    roomId: 'SABHA',
+    speaker: 'Google Nexus Team',
+    type: 'Keynote',
+    coordinates: { lat: 12.9141, lng: 77.6329 } // Google Bangalore Ananta
   },
   {
     id: 'A02',
     time: '10:30 AM',
+    isoDate: '20260416T103000',
+    isoDuration: '010000',
     titleKey: 'ethicTitle',
-    location: 'Hall A • Stage 01',
-    speaker: 'Dr. Elena Vane',
-    type: 'Keynote',
-    coordinates: { lat: 28.6155, lng: 77.2430 }
+    location: 'Neighborhood Alpha',
+    roomId: 'NB_ALPHA',
+    speaker: 'Sundar Pichai (via Gemini AI)',
+    type: 'Innovation',
+    coordinates: { lat: 12.9145, lng: 77.6335 }
   },
   {
     id: 'A03',
     time: '10:30 AM',
-    titleKey: 'spatialResonance',
-    location: 'Gallery Lounge',
-    speaker: 'Marcus Stone',
-    type: 'Workshop',
-    coordinates: { lat: 28.6140, lng: 77.2415 }
+    isoDate: '20260416T103000',
+    isoDuration: '010000',
+    titleKey: 'resonanceTitle',
+    location: 'Neighborhood Sigma',
+    roomId: 'NB_SIGMA',
+    speaker: 'Matthias Duarte',
+    type: 'Design',
+    coordinates: { lat: 12.9138, lng: 77.6325 }
   },
   {
     id: 'A04',
     time: '12:00 PM',
+    isoDate: '20260416T120000',
+    isoDuration: '003000',
     titleKey: 'techCheck',
-    location: 'Stage 01',
-    speaker: 'Tech Crew',
+    location: 'The Sabha',
+    roomId: 'SABHA',
+    speaker: 'Developer Relations',
     type: 'Briefing',
-    coordinates: { lat: 28.6155, lng: 77.2430 }
+    coordinates: { lat: 12.9141, lng: 77.6329 }
   },
   {
     id: 'A05',
     time: '02:00 PM',
-    titleKey: 'nexusOverview',
-    location: 'Atrium North',
-    speaker: 'Lead Architect',
+    isoDate: '20260416T140000',
+    isoDuration: '020000',
+    titleKey: 'spatialNav',
+    location: 'Sky Garden Loop',
+    roomId: 'SKY_GARDEN',
+    speaker: 'Campus Architects',
     type: 'Tour',
-    coordinates: { lat: 28.6160, lng: 77.2440 }
+    coordinates: { lat: 12.9145, lng: 77.6340 }
   }
 ];
 
-export const EVENT_DATA = MASTER_PROGRAM; // Backward compatibility alias
+export const EVENT_DATA = MASTER_PROGRAM;
