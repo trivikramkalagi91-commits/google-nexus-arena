@@ -2,10 +2,16 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, Clock } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useUser } from '../context/UserContext';
+import { EVENT_DATA } from '../data/event';
 
-const Dashboard = ({ persona }) => {
-  const isSpeaker = persona === 'speaker';
+const Dashboard = () => {
   const { t } = useLanguage();
+  const { user } = useUser();
+  const isSpeaker = user.role === 'speaker';
+
+  // Find the 'Now' session
+  const nowSession = EVENT_DATA[1];
 
   return (
     <div className="container" style={{ paddingBottom: '8rem' }}>
@@ -21,7 +27,7 @@ const Dashboard = ({ persona }) => {
           <h3 className="serif" style={{ marginBottom: '1.5rem' }}>
             {isSpeaker ? t('speakerAccess') : t('attendeeAccess')}
           </h3>
-          <h1 className="serif">{t('greeting')}</h1>
+          <h1 className="serif">{t('greeting', { name: user.name })}</h1>
           <p className="sans" style={{ marginTop: '2rem', maxWidth: '500px', fontSize: '1.25rem' }}>
             {isSpeaker ? t('speakerGreeting') : t('attendeeGreeting')}
           </p>
@@ -43,7 +49,7 @@ const Dashboard = ({ persona }) => {
               {isSpeaker ? t('techCheck') : t('ethicTitle')}
             </h2>
             <p className="sans" style={{ fontSize: '0.875rem' }}>
-              {isSpeaker ? t('preSession') : t('venue')}
+              {nowSession.location} • {nowSession.speaker}
             </p>
           </div>
           <motion.div 
@@ -63,16 +69,13 @@ const Dashboard = ({ persona }) => {
         >
           <h3 className="serif" style={{ marginBottom: '3rem' }}>{t('nextOnLedger')}</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-            {[
-              { time: '11:00 AM', titleKey: 'temporalLedger', loc: 'Atrium' },
-              { time: '01:30 PM', titleKey: 'temporalLedger', loc: 'Gallery 04' }
-            ].map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid rgba(26,26,26,0.05)', paddingBottom: '1rem' }}>
+            {EVENT_DATA.slice(1).map((item) => (
+              <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid rgba(26,26,26,0.05)', paddingBottom: '1rem' }}>
                 <div>
                   <p className="sans" style={{ fontSize: '0.65rem', fontWeight: 600, opacity: 0.5 }}>{item.time}</p>
                   <h2 className="serif" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>{t(item.titleKey)}</h2>
                 </div>
-                <p className="sans" style={{ fontSize: '0.75rem' }}>{item.loc}</p>
+                <p className="sans" style={{ fontSize: '0.75rem' }}>{item.location.split('•')[0]}</p>
               </div>
             ))}
           </div>
@@ -91,10 +94,12 @@ const Dashboard = ({ persona }) => {
             <h3 className="serif">{t('concierge')}</h3>
           </div>
           <p className="serif" style={{ fontSize: '1.5rem', fontStyle: 'italic', color: '#1A1A1A', lineHeight: '1.6' }}>
-            {isSpeaker ? t('speakerAI') : t('attendeeAI')}
+            {isSpeaker ? t('speakerAI', { name: user.name }) : t('attendeeAI', { name: user.name })}
           </p>
           <div style={{ marginTop: 'auto', display: 'flex', gap: '2rem', paddingTop: '3rem' }}>
-            <button className="btn-primary">{isSpeaker ? t('confirm') : t('reserve')}</button>
+            <button className="btn-primary" onClick={() => alert('Logic Triggered: Response sent to Concierge.')}>
+              {isSpeaker ? t('confirm') : t('reserve')}
+            </button>
             <button className="sans" style={{ background: 'none', border: 'none', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', opacity: 0.4 }}>{t('pass')}</button>
           </div>
         </motion.div>

@@ -1,76 +1,86 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Map as MapIcon, Globe, Info } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-presence'; // Error fixed later
+import { motion as FMotion, AnimatePresence as FAnimatePresence } from 'framer-motion';
+import { Map as MapIcon, Globe, Info, LogOut } from 'lucide-react';
 import { useLanguage } from './context/LanguageContext';
+import { useUser } from './context/UserContext';
 import Navbar from './components/Navbar';
 import Dashboard from './components/Dashboard';
 import NexusMap from './components/NexusMap';
 import Ledger from './components/Ledger';
+import Onboarding from './components/Onboarding';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [persona, setPersona] = useState('attendee'); 
-  const [ambientNote, setAmbientNote] = useState(null);
+  const { user, logout } = useUser();
   const { lang, setLang, t } = useLanguage();
+  const [ambientNote, setAmbientNote] = useState(null);
 
   const pageVariants = {
-    initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.19, 1, 0.22, 1] } },
-    exit: { opacity: 0, y: -10, transition: { duration: 0.8, ease: [0.19, 1, 0.22, 1] } }
+    initial: { opacity: 0, scale: 0.99 },
+    animate: { opacity: 1, scale: 1, transition: { duration: 1.5, ease: [0.19, 1, 0.22, 1] } },
+    exit: { opacity: 0, scale: 1.01, transition: { duration: 0.8, ease: [0.19, 1, 0.22, 1] } }
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setAmbientNote({
-        title: t('resonanceTitle'),
-        message: persona === 'speaker' 
-          ? t('speakerResonance')
-          : t('attendeeResonance')
-      });
-    }, 4000);
+    if (user.hasOnboarded) {
+      const timer = setTimeout(() => {
+        setAmbientNote({
+          title: t('resonanceTitle'),
+          message: user.role === 'speaker' 
+            ? t('speakerResonance')
+            : t('attendeeResonance')
+        });
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [user.role, lang, user.hasOnboarded]);
 
-    return () => clearTimeout(timer);
-  }, [persona, lang]); // Re-trigger on language change to update message
+  if (!user.hasOnboarded) {
+    return <Onboarding />;
+  }
 
   return (
     <div className="app-layout layer-0">
       
-      <div className="persona-switcher">
-        <button 
-          className={`persona-btn ${persona === 'attendee' ? 'active' : ''}`}
-          onClick={() => setPersona('attendee')}
+      {/* Dynamic Persona Tracker */}
+      <div 
+        className="persona-switcher" 
+        style={{ cursor: 'default', background: 'rgba(26,26,26,0.02)', border: 'none' }}
+      >
+        <span className="sans" style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.8 }}>
+          {user.role === 'speaker' ? 'Curator Privileges Active' : 'Verified Attendee'}
+        </span>
+        <div 
+          onClick={logout}
+          style={{ cursor: 'pointer', opacity: 0.3, marginLeft: '1rem' }}
+          title="Logout"
         >
-          Attendee View
-        </button>
-        <button 
-          className={`persona-btn ${persona === 'speaker' ? 'active' : ''}`}
-          onClick={() => setPersona('speaker')}
-        >
-          Speaker Access
-        </button>
+          <LogOut size={12} />
+        </div>
       </div>
 
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
       
       <main style={{ flex: 1, position: 'relative' }}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`${activeTab}-${persona}`}
+        <FAnimatePresence mode="wait">
+          <FMotion.div
+            key={`${activeTab}-${user.role}`}
             variants={pageVariants}
             initial="initial"
             animate="animate"
             exit="exit"
           >
-            {activeTab === 'dashboard' && <Dashboard persona={persona} />}
-            {activeTab === 'nexus' && <NexusMap persona={persona} />}
-            {activeTab === 'ledger' && <Ledger persona={persona} />}
-          </motion.div>
-        </AnimatePresence>
+            {activeTab === 'dashboard' && <Dashboard />}
+            {activeTab === 'nexus' && <NexusMap />}
+            {activeTab === 'ledger' && <Ledger />}
+          </FMotion.div>
+        </FAnimatePresence>
       </main>
 
-      <AnimatePresence>
+      <FAnimatePresence>
         {ambientNote && (
-          <motion.div 
+          <FMotion.div 
             initial={{ opacity: 0, y: 40, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }}
@@ -93,18 +103,16 @@ function App() {
                 <MapIcon size={20} />
               </div>
             </div>
-          </motion.div>
+          </FMotion.div>
         )}
       </AnimatePresence>
 
       <footer className="container" style={{ padding: '4rem 0', borderTop: '1px solid rgba(26,26,26,0.03)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <p className="sans" style={{ fontSize: '0.65rem', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '0.15em' }}>
-          Aether Physical Experience • 2026 Summit
+          {user.name} • Aether Physical Experience • 2026 Summit
         </p>
         <div style={{ display: 'flex', gap: '3rem', alignItems: 'center' }}>
-          <div 
-            style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}
-          >
+          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
             <button 
               onClick={() => setLang('en')}
               className="sans" 

@@ -7,7 +7,7 @@ export const translations = {
     dashboard: 'Dashboard',
     nexus: 'The Nexus',
     ledger: 'Your Ledger',
-    greeting: 'Good morning, Julian.',
+    greeting: 'Good morning, {name}.',
     speakerAccess: 'SPEAKER ACCESS • STAGE 01',
     attendeeAccess: 'ATTENDEE ACCESS • LEVEL 02',
     speakerGreeting: "Your presentation 'Spatial Ethics' is scheduled for 10:30 AM. Stage 01 is currently preparing for your arrival.",
@@ -19,8 +19,8 @@ export const translations = {
     venue: 'Hall A • Stage 01 • Elena Vane',
     nextOnLedger: 'Next on your Ledger',
     concierge: 'CONCIERGE',
-    speakerAI: "'Julian, I've confirmed your slides are loaded. Would you like a water service at the podium?'",
-    attendeeAI: "'Julian, I've noticed you have a gap. Would you like me to reserve a private pod in the Gallery Lounge?'",
+    speakerAI: "'{name}, I've confirmed your slides are loaded. Would you like a water service at the podium?'",
+    attendeeAI: "'{name}, I've noticed you have a gap. Would you like me to reserve a private pod in the Gallery Lounge?'",
     confirm: 'Confirm',
     reserve: 'Reserve',
     pass: 'Pass',
@@ -35,7 +35,7 @@ export const translations = {
     dashboard: 'डैशबोर्ड',
     nexus: 'द नेक्सस',
     ledger: 'आपका लेजर',
-    greeting: 'शुभ प्रभात, जूलियन।',
+    greeting: 'शुभ प्रभात, {name}।',
     speakerAccess: 'वक्ता पहुंच • स्टेज 01',
     attendeeAccess: 'भागीदार पहुंच • स्तर 02',
     speakerGreeting: "आपका प्रस्तुतीकरण 'स्थानिक नैतिकता' सुबह 10:30 बजे निर्धारित है। स्टेज 01 आपके आगमन की तैयारी कर रहा है।",
@@ -47,8 +47,8 @@ export const translations = {
     venue: 'हॉल ए • स्टेज 01 • एलेना वेन',
     nextOnLedger: 'आपके लेजर पर अगला',
     concierge: 'सहायक',
-    speakerAI: "'जूलियन, मैंने पुष्टि की है कि आपकी स्लाइड्स लोड हो गई हैं। क्या आप पोडियम पर पानी की सेवा चाहेंगे?'",
-    attendeeAI: "'जूलियन, मैंने देखा है कि आपके पास समय है। क्या आप चाहते हैं कि मैं गैलरी लाउंज में एक निजी पॉड सुरक्षित करूँ?'",
+    speakerAI: "'{name}, मैंने पुष्टि की है कि आपकी स्लाइड्स लोड हो गई हैं। क्या आप पोडियम पर पानी की सेवा चाहेंगे?'",
+    attendeeAI: "'{name}, मैंने देखा है कि आपके पास समय है। क्या आप चाहते हैं कि मैं गैलरी लाउंज में एक निजी पॉड सुरक्षित करूँ?'",
     confirm: 'पुष्टि करें',
     reserve: 'आरक्षित करें',
     pass: 'छोड़ें',
@@ -64,8 +64,12 @@ export const translations = {
 export const LanguageProvider = ({ children }) => {
   const [lang, setLang] = useState('en');
 
-  const t = (key) => {
-    return translations[lang][key] || key;
+  const t = (key, params = {}) => {
+    let text = translations[lang][key] || key;
+    Object.keys(params).forEach(param => {
+      text = text.replace(`{${param}}`, params[param]);
+    });
+    return text;
   };
 
   return (

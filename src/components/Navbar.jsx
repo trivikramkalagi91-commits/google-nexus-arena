@@ -1,8 +1,10 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useUser } from '../context/UserContext';
 
 const Navbar = ({ activeTab, setActiveTab }) => {
   const { t } = useLanguage();
+  const { user } = useUser();
   const tabs = [
     { id: 'dashboard', label: t('dashboard') },
     { id: 'nexus', label: t('nexus') },
@@ -38,7 +40,7 @@ const Navbar = ({ activeTab, setActiveTab }) => {
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <div style={{ width: '32px', height: '1px', background: 'rgba(26,26,26,0.1)' }}></div>
         <span className="sans" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.2em', opacity: 0.6 }}>
-          Julian Drax
+          {user.name}
         </span>
       </div>
     </nav>
