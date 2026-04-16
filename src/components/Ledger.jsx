@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Plus, Check, AlertCircle, ExternalLink, Clock } from 'lucide-react';
+import { Calendar, Plus, Check, AlertCircle, ExternalLink, Clock, Play } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useUser } from '../context/UserContext';
+import { useLiveFeed } from '../context/LiveFeedContext';
 import { MASTER_PROGRAM } from '../data/event';
 import { generateGoogleCalendarLink } from '../utils/calendar';
 
 const Ledger = () => {
   const { t } = useLanguage();
   const { user, toggleSession } = useUser();
-  const [view, setView] = useState('mine'); // 'mine' or 'program'
+  const { matchDay, liveState } = useLiveFeed();
+  const [view, setView] = useState('mine');
 
   const savedIds = user?.savedSessionIds || ['S01'];
   const savedSessions = MASTER_PROGRAM.filter(s => savedIds.includes(s.id));
   
-  // Conflict Detection
   const hasConflict = (time) => {
     return savedSessions.filter(s => s.time === time).length > 1;
   };
@@ -29,7 +30,7 @@ const Ledger = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '4rem', paddingBottom: '2rem', borderBottom: '1px solid rgba(26,26,26,0.05)' }}>
         <div>
           <h3 className="serif" style={{ marginBottom: '1rem' }}>{t('temporalLedger')}</h3>
-          <h1 className="serif" style={{ fontSize: '4rem' }}>Match Day</h1>
+          <h1 className="serif" style={{ fontSize: '4rem' }}>{matchDay?.city} Day</h1>
         </div>
         
         <div className="glass" style={{ display: 'flex', gap: '0.5rem', padding: '0.5rem', border: '1px solid rgba(26,26,26,0.05)' }}>
@@ -63,7 +64,7 @@ const Ledger = () => {
               letterSpacing: '0.1em'
             }}
           >
-            ARENA PROGRAM
+            MATCH SCHEDULE
           </button>
         </div>
       </div>
@@ -80,16 +81,18 @@ const Ledger = () => {
               <div style={{ padding: '8rem 0', textAlign: 'center' }}>
                 <Calendar size={48} opacity={0.1} style={{ marginBottom: '2rem' }} />
                 <h2 className="serif" style={{ opacity: 0.3 }}>Agenda is empty.</h2>
-                <button 
-                  onClick={() => setView('program')}
-                  className="btn-primary" 
-                  style={{ marginTop: '2rem' }}
-                >
-                  Discover Match Events
-                </button>
+                <button onClick={() => setView('program')} className="btn-primary" style={{ marginTop: '2rem' }}>Discover Match Events</button>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <div className="glass" style={{ padding: '1.5rem', border: '1px solid rgba(56, 161, 105, 0.2)', background: 'rgba(56, 161, 105, 0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                   <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                      <Play size={16} color="#38A169" />
+                      <span className="sans" style={{ fontSize: '0.75rem', fontWeight: 700 }}>LIVE IN-STADIUM STATUS: {liveState.score}/{liveState.wickets} ({liveState.overs})</span>
+                   </div>
+                   <div className="badge" style={{ background: '#38A169', color: '#FFF' }}>{liveState.phase}</div>
+                </div>
+
                 {savedSessions.map((session) => (
                   <div key={session.id} style={{ position: 'relative' }}>
                     <div 
@@ -108,16 +111,15 @@ const Ledger = () => {
                           <h2 className="serif" style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{t(session.titleKey)}</h2>
                           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                              <p className="sans" style={{ fontSize: '0.875rem', opacity: 0.6 }}>{session.location}</p>
-                             {session.waitMinutes > 0 && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: session.waitMinutes > 15 ? '#E53E3E' : '#38A169' }}>
-                                   <Clock size={12} />
-                                   <span className="sans" style={{ fontSize: '0.65rem', fontWeight: 700 }}>{session.waitMinutes}m wait</span>
-                                </div>
-                             )}
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: liveState.phase === 'BREAK' ? '#E53E3E' : '#38A169' }}>
+                                <Clock size={12} />
+                                <span className="sans" style={{ fontSize: '0.65rem', fontWeight: 700 }}>
+                                   {liveState.phase === 'BREAK' ? '15m peak wait' : '4m stable wait'}
+                                </span>
+                             </div>
                           </div>
                         </div>
                       </div>
-                      
                       <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
                         {hasConflict(session.time) && (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#E53E3E' }}>
@@ -125,21 +127,10 @@ const Ledger = () => {
                             <span className="sans" style={{ fontSize: '0.65rem', fontWeight: 700 }}>TEMPORAL CONFLICT</span>
                           </div>
                         )}
-                        <a 
-                          href={generateGoogleCalendarLink(session)} 
-                          target="_blank" 
-                          rel="noreferrer"
-                          className="btn-primary"
-                          style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}
-                        >
-                          <ExternalLink size={14} />
-                          SYNC
+                        <a href={generateGoogleCalendarLink(session)} target="_blank" rel="noreferrer" className="btn-primary" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <ExternalLink size={14} /> SYNC
                         </a>
-                        <button 
-                          onClick={() => toggleSession(session.id)}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.3 }}
-                          title="Remove from Ledger"
-                        >
+                        <button onClick={() => toggleSession(session.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.3 }}>
                           {session.id !== 'S01' && <Plus style={{ transform: 'rotate(45deg)' }} size={20} />}
                         </button>
                       </div>
@@ -160,18 +151,7 @@ const Ledger = () => {
               {MASTER_PROGRAM.map((session) => {
                 const isSaved = savedIds.includes(session.id);
                 return (
-                  <div 
-                    key={session.id} 
-                    className="bento-card" 
-                    style={{ 
-                      padding: '2rem 3rem', 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      background: isSaved ? 'rgba(26,26,26,0.02)' : 'transparent',
-                      border: '1px solid rgba(26,26,26,0.05)'
-                    }}
-                  >
+                  <div key={session.id} className="bento-card" style={{ padding: '2rem 3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: isSaved ? 'rgba(26,26,26,0.02)' : 'transparent', border: '1px solid rgba(26,26,26,0.05)' }}>
                     <div style={{ display: 'flex', gap: '3rem', alignItems: 'center' }}>
                       <p className="sans" style={{ fontSize: '0.65rem', fontWeight: 700, opacity: 0.5 }}>{session.time}</p>
                       <div>
@@ -179,24 +159,8 @@ const Ledger = () => {
                         <p className="sans" style={{ fontSize: '0.75rem', opacity: 0.5 }}>{session.location}</p>
                       </div>
                     </div>
-                    <button 
-                      onClick={() => toggleSession(session.id)}
-                      className="sans"
-                      style={{ 
-                        background: isSaved ? 'var(--dark)' : 'transparent',
-                        color: isSaved ? '#FFF' : 'var(--dark)',
-                        border: '1px solid var(--dark)',
-                        padding: '0.5rem 1rem',
-                        fontSize: '0.65rem',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem'
-                      }}
-                    >
-                      {isSaved ? <Check size={14} /> : <Plus size={14} />}
-                      {isSaved ? 'SAVED' : 'ADD TO AGENDA'}
+                    <button onClick={() => toggleSession(session.id)} className="sans" style={{ background: isSaved ? 'var(--dark)' : 'transparent', color: isSaved ? '#FFF' : 'var(--dark)', border: '1px solid var(--dark)', padding: '0.5rem 1rem', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {isSaved ? <Check size={14} /> : <Plus size={14} />} {isSaved ? 'SAVED' : 'ADD TO AGENDA'}
                     </button>
                   </div>
                 );
