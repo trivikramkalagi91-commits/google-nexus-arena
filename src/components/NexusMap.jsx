@@ -1,19 +1,26 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Info } from 'lucide-react';
+import { MapPin, Info, ArrowUpRight } from 'lucide-react';
 
-const NexusMap = () => {
+const NexusMap = ({ persona }) => {
+  const isSpeaker = persona === 'speaker';
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="container"
-      style={{ marginTop: '4rem' }}
+      style={{ marginTop: '4rem', paddingBottom: '8rem' }}
     >
-      <div style={{ padding: '4rem 0', borderBottom: '1px solid rgba(26,26,26,0.05)', marginBottom: '4rem' }}>
-        <h1 className="serif">The Nexus</h1>
-        <p className="sans" style={{ opacity: 0.6, letterSpacing: '0.1em', marginTop: '1rem', textTransform: 'uppercase', fontSize: '0.75rem' }}>
-          Spatial Navigation & Wayfinding
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: '3rem', borderBottom: '1px solid rgba(26,26,26,0.05)', marginBottom: '4rem' }}>
+        <div>
+          <h3 className="serif" style={{ marginBottom: '1rem' }}>SPATIAL NAVIGATION</h3>
+          <h1 className="serif">The Nexus</h1>
+        </div>
+        <p className="sans" style={{ fontSize: '0.75rem', maxWidth: '300px', textAlign: 'right', opacity: 0.6 }}>
+          {isSpeaker 
+            ? "Speaker routing active. Preferred access via Stage 01 Service Entrance." 
+            : "General navigation active. High traffic detected in the North Atrium."}
         </p>
       </div>
 
@@ -26,74 +33,76 @@ const NexusMap = () => {
         <div style={{ position: 'absolute', top: '66%', left: 0, width: '100%', height: '1px', background: 'rgba(26,26,26,0.05)' }}></div>
 
         {/* Level Indicator */}
-        <div style={{ position: 'absolute', top: '2rem', left: '2rem', background: '#FFFFFF', padding: '1rem', border: '1px solid rgba(26,26,26,0.1)' }}>
-          <p className="sans" style={{ fontSize: '0.65rem', fontWeight: 600 }}>LEVEL</p>
-          <p className="serif" style={{ fontSize: '1.5rem' }}>02</p>
+        <div style={{ position: 'absolute', top: '2rem', left: '2rem', background: '#FFFFFF', padding: '1.5rem', border: '1px solid rgba(26,26,26,0.1)' }}>
+          <p className="sans" style={{ fontSize: '0.6rem', fontWeight: 700, opacity: 0.5, letterSpacing: '0.1em' }}>FLOOR</p>
+          <p className="serif" style={{ fontSize: '2rem' }}>02</p>
         </div>
 
-        {/* POI: The Atrium (Main Stage) */}
+        {/* POI: The Atrium */}
         <motion.div 
-          style={{ position: 'absolute', top: '25%', left: '60%', width: '150px' }}
+          style={{ position: 'absolute', top: '20%', left: '55%', width: '200px' }}
           whileHover={{ scale: 1.05 }}
         >
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <div style={{ width: '10px', height: '10px', background: '#1A1A1A' }}></div>
-            <h2 className="serif" style={{ fontSize: '1.25rem' }}>The Atrium</h2>
+            <div style={{ width: '12px', height: '12px', background: isSpeaker ? 'var(--accent)' : '#1A1A1A' }}></div>
+            <h2 className="serif" style={{ fontSize: '1.5rem' }}>The Atrium</h2>
           </div>
-          <p className="sans" style={{ fontSize: '0.65rem', opacity: 0.6 }}>Primary Keynote Hall</p>
+          <p className="sans" style={{ fontSize: '0.75rem', opacity: 0.5 }}>{isSpeaker ? 'Your Session Stage' : 'Main Event Hall'}</p>
         </motion.div>
 
-        {/* POI: Gallery 04 */}
-        <motion.div 
-          style={{ position: 'absolute', top: '70%', left: '15%', width: '150px' }}
-          whileHover={{ scale: 1.05 }}
-        >
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <div style={{ width: '10px', height: '10px', border: '1px solid #1A1A1A' }}></div>
-            <h2 className="serif" style={{ fontSize: '1.25rem' }}>Gallery 04</h2>
-          </div>
-          <p className="sans" style={{ fontSize: '0.65rem', opacity: 0.6 }}>Interactive Exhibits</p>
-        </motion.div>
-
-        {/* Current User Location */}
+        {/* User Location */}
         <motion.div 
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: 'spring', delay: 0.5 }}
+          transition={{ duration: 1, delay: 0.8 }}
           style={{ position: 'absolute', top: '50%', left: '40%', zIndex: 10 }}
         >
-          <div className="glass" style={{ padding: '0.75rem', border: '1px solid var(--accent)', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-            <MapPin size={16} color="var(--accent)" />
-            <span className="serif" style={{ fontSize: '0.875rem' }}>You</span>
+          <div className="glass" style={{ padding: '1rem 2rem', border: '1px solid var(--accent)', display: 'flex', gap: '1rem', alignItems: 'center', boxShadow: '0 20px 40px rgba(0,0,0,0.05)' }}>
+            <MapPin size={18} color="var(--accent)" />
+            <span className="serif" style={{ fontSize: '0.875rem', fontWeight: 600 }}>YOU ARE HERE</span>
           </div>
         </motion.div>
 
-        {/* Ambient Map Controls */}
-        <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', display: 'flex', gap: '1rem' }}>
-          <button className="glass sans" style={{ padding: '0.5rem 1rem', border: '1px solid rgba(26,26,26,0.1)', fontSize: '0.75rem', textTransform: 'uppercase', cursor: 'pointer' }}>
-            Zoom In
-          </button>
-          <button className="glass sans" style={{ padding: '0.5rem 1rem', border: '1px solid rgba(26,26,26,0.1)', fontSize: '0.75rem', textTransform: 'uppercase', cursor: 'pointer' }}>
-            Zoom Out
-          </button>
-        </div>
+        {/* Wayfinding Line - Artistic simulation of Google Maps polyline */}
+        <svg style={{ position: 'absolute', width: '100%', height: '100%', pointerEvents: 'none' }}>
+          <motion.path 
+            d="M 40% 50% L 40% 30% L 55% 30%" 
+            fill="none" 
+            stroke="var(--accent)" 
+            strokeWidth="2" 
+            strokeDasharray="10, 10"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 3, delay: 1 }}
+          />
+        </svg>
       </div>
 
-      <div style={{ marginTop: '2rem', display: 'flex', gap: '4rem' }}>
+      <div style={{ marginTop: '4rem', display: 'flex', gap: '6rem' }}>
         <div style={{ flex: 1 }}>
-          <h3 className="serif" style={{ fontSize: '0.875rem', marginBottom: '1rem' }}>SPATIAL RESONANCE</h3>
-          <p className="sans" style={{ fontSize: '0.875rem', lineHeight: '1.6' }}>
-            The Nexus uses proximity logic to highight the most relevant facilities near you. Currently, the <strong>East Atrium</strong> is your fastest route to the upcoming keynote.
+          <h3 className="serif" style={{ marginBottom: '1.5rem' }}>INTELLIGENT ROUTING</h3>
+          <p className="sans" style={{ fontSize: '1.125rem', lineHeight: '1.8' }}>
+            Nexus AI has analyzed the current floor traffic. {isSpeaker 
+              ? "Since you have a presentation coming up, we have reserved a freight elevator for your equipment transfer." 
+              : "The North corridor is currently at 80% capacity. We recommend taking the East Gallery route for a quieter experience."}
           </p>
         </div>
-        <div style={{ width: '300px' }}>
-          <div className="layer-3" style={{ padding: '1.5rem' }}>
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem' }}>
-              <Info size={16} />
-              <h3 className="serif" style={{ fontSize: '0.75rem' }}>VENUE STATS</h3>
+        <div style={{ width: '350px' }}>
+          <div className="layer-3" style={{ padding: '2.5rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <Info size={18} />
+              <h3 className="serif">REAL-TIME DATA</h3>
             </div>
-            <p className="sans" style={{ fontSize: '0.75rem' }}>Traffic: Calm</p>
-            <p className="sans" style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>Temperature: 21°C</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span className="sans" style={{ fontSize: '0.875rem' }}>Occupancy</span>
+                <span className="sans" style={{ fontSize: '0.875rem', fontWeight: 600 }}>Moderate</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span className="sans" style={{ fontSize: '0.875rem' }}>Ambience</span>
+                <span className="sans" style={{ fontSize: '0.875rem', fontWeight: 600 }}>Curated Calm</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

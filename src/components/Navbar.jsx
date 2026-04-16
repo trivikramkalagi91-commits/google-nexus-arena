@@ -1,5 +1,4 @@
 import React from 'react';
-import { User } from 'lucide-react';
 
 const Navbar = ({ activeTab, setActiveTab }) => {
   const tabs = [
@@ -12,12 +11,13 @@ const Navbar = ({ activeTab, setActiveTab }) => {
     <nav className="nav-bar container">
       <div 
         className="serif" 
-        style={{ fontSize: '1.5rem', fontWeight: 600, cursor: 'pointer' }}
+        style={{ fontSize: '1.25rem', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em' }}
         onClick={() => setActiveTab('dashboard')}
       >
         AETHER
       </div>
-      <div style={{ display: 'flex', gap: '2.5rem' }}>
+      
+      <div className="nav-links">
         {tabs.map((tab) => (
           <a
             key={tab.id}
@@ -32,9 +32,12 @@ const Navbar = ({ activeTab, setActiveTab }) => {
           </a>
         ))}
       </div>
-      <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', opacity: 0.8 }}>
-        <User size={18} />
-        <span className="sans" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 500 }}>Julian Drax</span>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ width: '32px', height: '1px', background: 'rgba(26,26,26,0.1)' }}></div>
+        <span className="sans" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.2em', opacity: 0.6 }}>
+          Julian Drax
+        </span>
       </div>
     </nav>
   );

@@ -1,15 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Download } from 'lucide-react';
+import { Bookmark, Download } from 'lucide-react';
 
-const Ledger = () => {
+const Ledger = ({ persona }) => {
+  const isSpeaker = persona === 'speaker';
+
   const sessions = [
-    { time: '09:00', title: 'Arrival & Morning Reflection', speaker: 'Nexus Staff', location: 'The Atrium' },
-    { time: '10:30', title: 'Spatial Ethics in the AI Age', speaker: 'Dr. Elena Vane', location: 'Hall A' },
-    { time: '11:00', title: 'The Silent Gallery Architecture', speaker: 'Marcus Stone', location: 'Atrium' },
-    { time: '12:30', title: 'Communal Lunch', speaker: '-', location: 'The Square' },
-    { time: '13:30', title: 'Curating the Future', speaker: 'Sarah Lylat', location: 'Gallery 04' },
-    { time: '15:00', title: 'Closing Plenary', speaker: 'Julian Drax', location: 'The Atrium' }
+    { time: '09:00 AM', title: 'Arrival & Morning Reflection', speaker: 'Nexus Staff', location: 'The Atrium' },
+    { time: '10:30 AM', title: isSpeaker ? 'Spatial Ethics (Your Stage)' : 'Spatial Ethics in the AI Age', speaker: 'Dr. Elena Vane', location: 'Hall A' },
+    { time: '11:00 AM', title: isSpeaker ? 'Speaker Lounge Q&A' : 'The Silent Gallery Tour', speaker: 'Marcus Stone', location: 'Atrium' },
+    { time: '12:30 PM', title: 'Communal Lunch', speaker: '-', location: 'The Square' },
+    { time: '01:30 PM', title: 'Curating the Future', speaker: 'Sarah Lylat', location: 'Gallery 04' },
   ];
 
   return (
@@ -17,53 +18,54 @@ const Ledger = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="container"
-      style={{ marginTop: '4rem' }}
+      style={{ marginTop: '4rem', paddingBottom: '8rem' }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: '3rem', borderBottom: '1px solid rgba(26,26,26,0.05)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: '3rem', borderBottom: '1px solid rgba(26,26,26,0.05)', marginBottom: '4rem' }}>
         <div>
-          <h1 className="serif">Your Ledger</h1>
-          <p className="sans" style={{ opacity: 0.6, letterSpacing: '0.1em', marginTop: '1rem', textTransform: 'uppercase', fontSize: '0.75rem' }}>
-            Event Schedule • April 16, 2026
-          </p>
+          <h3 className="serif" style={{ marginBottom: '1rem' }}>TEMPORAL LEDGER</h3>
+          <h1 className="serif">April 16, 2026</h1>
         </div>
-        <button className="sans" style={{ background: 'none', border: '1px solid rgba(26,26,26,0.1)', padding: '0.75rem 1.5rem', display: 'flex', gap: '0.75rem', alignItems: 'center', cursor: 'pointer', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-          <Download size={14} />
-          Sync to Google Calendar
-        </button>
+        <div style={{ display: 'flex', gap: '2rem' }}>
+          <button className="sans" style={{ background: 'none', border: 'none', display: 'flex', gap: '0.75rem', alignItems: 'center', cursor: 'pointer', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.6 }}>
+            <Download size={14} />
+            Export
+          </button>
+          <button className="btn-primary">Sync Calendar</button>
+        </div>
       </div>
 
-      <div style={{ marginTop: '4rem' }}>
+      <div style={{ marginTop: '2rem' }}>
         {sessions.map((session, idx) => (
           <motion.div 
             key={idx}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: idx * 0.1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.5, delay: idx * 0.1, ease: [0.19, 1, 0.22, 1] }}
             style={{ 
               display: 'flex', 
-              padding: '2rem 0', 
-              borderBottom: '1px solid rgba(26,26,26,0.03)',
+              padding: '3rem 0', 
+              borderBottom: '1px solid rgba(26, 26, 26, 0.03)',
               alignItems: 'center'
             }}
           >
-            <div style={{ width: '100px' }}>
-              <p className="sans" style={{ fontSize: '0.875rem', fontWeight: 600 }}>{session.time}</p>
+            <div style={{ width: '150px' }}>
+              <p className="sans" style={{ fontSize: '1rem', fontWeight: 600 }}>{session.time}</p>
             </div>
             <div style={{ flex: 2 }}>
-              <h2 className="serif" style={{ fontSize: '1.5rem' }}>{session.title}</h2>
-              <p className="sans" style={{ fontSize: '0.875rem', marginTop: '0.25rem' }}>{session.speaker}</p>
+              <h2 className="serif" style={{ fontSize: '1.75rem' }}>{session.title}</h2>
+              <p className="sans" style={{ fontSize: '0.875rem', marginTop: '0.5rem', opacity: 0.6 }}>{session.speaker}</p>
             </div>
-            <div style={{ flex: 1, textAlign: 'right' }}>
-              <p className="sans" style={{ fontSize: '0.875rem', opacity: 0.6 }}>{session.location}</p>
+            <div style={{ flex: 1, textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1rem' }}>
+              <p className="sans" style={{ fontSize: '0.875rem', fontWeight: 500 }}>{session.location}</p>
+              <Bookmark size={16} opacity={0.3} />
             </div>
           </motion.div>
         ))}
       </div>
 
-      <div className="layer-2" style={{ marginTop: '4rem', padding: '3rem', textAlign: 'center' }}>
-        <Calendar size={32} style={{ marginBottom: '1.5rem', opacity: 0.2 }} />
-        <p className="serif" style={{ fontSize: '1.25rem', fontStyle: 'italic' }}>
-          "Your ledger is perfectly balanced. You have 3 open windows for networking or self-guided exploration."
+      <div className="layer-3" style={{ marginTop: '6rem', padding: '4rem', textAlign: 'center' }}>
+        <p className="serif" style={{ fontSize: '1.5rem', fontStyle: 'italic', maxWidth: '600px', margin: '0 auto', lineHeight: '1.6' }}>
+          "Julian, your temporal path is clear. You have curated a day of focused learning and meaningful interaction."
         </p>
       </div>
     </motion.div>
