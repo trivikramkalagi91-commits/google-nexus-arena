@@ -2,27 +2,62 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const UserContext = createContext();
 
+const initialState = {
+  name: '',
+  role: '',
+  hasOnboarded: false,
+  savedSessionIds: ['A01']
+};
+
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('aether_user');
-    return saved ? JSON.parse(saved) : { name: '', role: '', hasOnboarded: false };
-  });
+  const [user, setUser] = useState(initialState);
 
   useEffect(() => {
-    localStorage.setItem('aether_user', JSON.stringify(user));
-  }, [user]);
+    const saved = localStorage.getItem('aether_user');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // CRITICAL BUG FIX: Merge parsed state with initial state to avoid missing fields like savedSessionIds
+        setUser({
+          ...initialState,
+          ...parsed,
+          savedSessionIds: parsed.savedSessionIds || ['A01']
+        });
+      } catch (e) {
+        console.error("Failed to parse user data", e);
+      }
+    }
+  }, []);
 
-  const onboardUser = (name, role) => {
-    setUser({ name, role, hasOnboarded: true });
+  const onboardingUser = (name, role) => {
+    const newUser = { ...user, name, role, hasOnboarded: true };
+    setUser(newUser);
+    localStorage.setItem('aether_user', JSON.stringify(newUser));
+  };
+
+  const toggleSession = (id) => {
+    setUser(prev => {
+      const currentIds = prev.savedSessionIds || ['A01'];
+      const isSaved = currentIds.includes(id);
+      const newIds = isSaved 
+        ? currentIds.filter(sid => sid !== id)
+        : [...currentIds, id];
+      
+      if (!newIds.includes('A01')) newIds.push('A01');
+
+      const updated = { ...prev, savedSessionIds: newIds };
+      localStorage.setItem('aether_user', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const logout = () => {
-    setUser({ name: '', role: '', hasOnboarded: false });
     localStorage.removeItem('aether_user');
+    setUser(initialState);
   };
 
   return (
-    <UserContext.Provider value={{ user, onboardUser, logout }}>
+    <UserContext.Provider value={{ user, onboardingUser, toggleSession, logout }}>
       {children}
     </UserContext.Provider>
   );

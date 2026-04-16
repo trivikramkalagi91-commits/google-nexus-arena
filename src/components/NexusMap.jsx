@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Navigation, Info } from 'lucide-react';
+import { MapPin, Navigation, Compass, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useUser } from '../context/UserContext';
 import { GOOGLE_MAPS_API_KEY, EVENT_CONFIG } from '../config/services';
 import { silverMapStyle } from '../config/mapStyles';
+import { MASTER_PROGRAM } from '../data/event';
 
 const NexusMap = () => {
   const { t } = useLanguage();
@@ -14,6 +15,10 @@ const NexusMap = () => {
   const [isLive, setIsLive] = useState(false);
   const [mapError, setMapError] = useState(false);
   const isSpeaker = user.role === 'speaker';
+
+  const savedIds = user?.savedSessionIds || ['A01'];
+  const savedSessions = MASTER_PROGRAM.filter(s => savedIds.includes(s.id));
+  const nextEvent = savedSessions.length > 1 ? savedSessions[1] : savedSessions[0];
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -25,20 +30,16 @@ const NexusMap = () => {
           });
           setIsLive(true);
         },
-        (error) => {
-          console.warn("Geolocation denied or failed. Defaulting to venue.");
-        }
+        () => console.warn("Geolocation denied.")
       );
     }
   }, []);
 
-  // Handle Google Maps specific errors (like the one in the user screenshot)
-  const handleMapError = () => {
-    setMapError(true);
-  };
-
   return (
-    <APIProvider apiKey={GOOGLE_MAPS_API_KEY} onLoadError={handleMapError}>
+    <APIProvider 
+      apiKey={GOOGLE_MAPS_API_KEY} 
+      onLoadError={() => setMapError(true)}
+    >
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -55,7 +56,7 @@ const NexusMap = () => {
               {isLive ? 'PRECISION GEOLOCATION ACTIVE' : 'EVENT VENUE DEFAULT'}
             </p>
             <p className="sans" style={{ fontSize: '0.75rem', marginTop: '0.5rem', opacity: 0.6 }}>
-              {isLive ? `Bangalore Sector Detected` : EVENT_CONFIG.location}
+              Target: <span style={{ fontWeight: 700 }}>{t(nextEvent?.titleKey) || nextEvent?.title}</span>
             </p>
           </div>
         </div>
@@ -72,58 +73,36 @@ const NexusMap = () => {
                 style={{ height: '100%', width: '100%' }}
               >
                 <Map
-                  center={coords}
-                  zoom={isLive ? 12 : 15}
-                  id="nexus-map"
-                  mapId="AETHER_MAP_ID"
+                  center={nextEvent?.coordinates || EVENT_CONFIG.coordinates}
+                  zoom={17}
                   disableDefaultUI={true}
                   styles={silverMapStyle}
-                  onTilesLoaded={() => console.log("Map tiles ready")}
                 >
-                  <Marker position={coords} />
+                  <Marker position={nextEvent?.coordinates || EVENT_CONFIG.coordinates} />
                 </Map>
               </motion.div>
             ) : (
               <motion.div 
-                key="blueprint-map"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="blueprint-overlay"
-                style={{ height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}
+                style={{ height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F9F8F6', flexDirection: 'column' }}
               >
-                <div style={{ position: 'absolute', inset: 0, opacity: 0.03, background: 'radial-gradient(circle, #1A1A1A 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
-                <div style={{ padding: '4rem', border: '1px solid rgba(26,26,26,0.05)', textAlign: 'center' }}>
-                  <Navigation size={40} opacity={0.1} />
-                  <h2 className="serif" style={{ marginTop: '2rem', opacity: 0.3 }}>ARCHITECTURAL BLUEPRINT</h2>
-                  <p className="sans" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '1rem', opacity: 0.4 }}>Manual Override Active</p>
-                </div>
+                <AlertTriangle size={32} opacity={0.2} color="var(--accent)" />
+                <h3 className="serif" style={{ marginTop: '2rem', opacity: 0.4 }}>ARCHITECTURAL OVERRIDE ACTIVE</h3>
+                <p className="sans" style={{ fontSize: '0.6rem', opacity: 0.3, marginTop: '1rem' }}>Live Map Sync Paused: Verify API activation in Cloud Console</p>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Location Focus UI */}
           <div style={{ position: 'absolute', top: '2rem', right: '2rem', zIndex: 10 }}>
-            <button 
-              onClick={() => setCoords(EVENT_CONFIG.coordinates)}
-              className="glass"
-              style={{ padding: '1rem', border: '1px solid rgba(26,26,26,0.1)', cursor: 'pointer', display: 'flex', gap: '1rem', alignItems: 'center' }}
-            >
+            <div className="glass" style={{ padding: '1rem', border: '1px solid rgba(26,26,26,0.1)', display: 'flex', gap: '1rem', alignItems: 'center' }}>
               <Navigation size={14} opacity={0.6} />
-              <span className="sans" style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.1em' }}>RECENTER VENUE</span>
-            </button>
+              <span className="sans" style={{ fontSize: '0.6rem', fontWeight: 700 }}>SYNC: {nextEvent?.location}</span>
+            </div>
           </div>
 
           <motion.div 
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.5, delay: 0.8, ease: [0.19, 1, 0.22, 1] }}
-            style={{ 
-              position: 'absolute', 
-              top: '50%', 
-              left: '50%', 
-              transform: 'translate(-50%, -50%)', 
-              zIndex: 100 
-            }}
+            style={{ position: 'absolute', top: '45%', left: '42%', zIndex: 100 }}
           >
             <div className="pulse-container">
               <div className="pulse-ring"></div>
@@ -139,9 +118,7 @@ const NexusMap = () => {
           <div style={{ flex: 1 }}>
             <h3 className="serif" style={{ marginBottom: '1.5rem' }}>{t('concierge')}</h3>
             <p className="serif" style={{ fontSize: '1.5rem', lineHeight: '1.6', fontStyle: 'italic' }}>
-              {isLive 
-                ? `"${user.name}, I see you are currently in Bangalore. Your flight to New Delhi is tracked; I will notify you when you enter the Pragati Maidan resonance zone."` 
-                : `"${user.name}, I have locked the venue coordinates. Precise wayfinding will activate once you arrive at the summit premises."`}
+              {`"${user.name}, I have updated the Nexus. I'm focusing your wayfinding on '${t(nextEvent?.titleKey) || nextEvent?.title}' in ${nextEvent?.location}."`}
             </p>
           </div>
         </div>
