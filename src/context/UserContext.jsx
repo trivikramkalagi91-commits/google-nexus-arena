@@ -29,7 +29,7 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
-  const onboardingUser = (name, role) => {
+  const onboardUser = (name, role) => {
     const newUser = { ...user, name, role, hasOnboarded: true };
     setUser(newUser);
     localStorage.setItem('aether_user', JSON.stringify(newUser));
@@ -57,7 +57,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, onboardingUser, toggleSession, logout }}>
+    <UserContext.Provider value={{ user, onboardUser, toggleSession, logout }}>
       {children}
     </UserContext.Provider>
   );

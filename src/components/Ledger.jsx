@@ -12,10 +12,11 @@ const Ledger = () => {
   const [view, setView] = useState('mine'); // 'mine' or 'program'
 
   const savedIds = user?.savedSessionIds || ['A01'];
-  const savedSessions = MASTER_PROGRAM.filter(s => savedIds.includes(s.id));
+  const savedSessions = MASTER_PROGRAM.filter(s => savedIds.includes(s.id)) || [];
   
   // Conflict Detection
   const hasConflict = (time) => {
+    if (!time) return false;
     return savedSessions.filter(s => s.time === time).length > 1;
   };
 
@@ -103,10 +104,10 @@ const Ledger = () => {
                       }}
                     >
                       <div style={{ display: 'flex', gap: '4rem', alignItems: 'center' }}>
-                        <p className="sans" style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.4, minWidth: '80px' }}>{session.time}</p>
+                        <p className="sans" style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.4, minWidth: '80px' }}>{session.time || 'TBD'}</p>
                         <div>
-                          <h2 className="serif" style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{session.titleKey ? t(session.titleKey) : session.title}</h2>
-                          <p className="sans" style={{ fontSize: '0.875rem', opacity: 0.6 }}>{session.location} • {session.speaker}</p>
+                          <h2 className="serif" style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{t(session.titleKey || '') || session.title || 'Untitled'}</h2>
+                          <p className="sans" style={{ fontSize: '0.875rem', opacity: 0.6 }}>{(session.location || 'Unknown')} • {(session.speaker || 'TBD')}</p>
                         </div>
                       </div>
                       
@@ -150,7 +151,7 @@ const Ledger = () => {
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {MASTER_PROGRAM.map((session) => {
-                const isSaved = user.savedSessionIds.includes(session.id);
+                const isSaved = savedIds.includes(session.id);
                 return (
                   <div 
                     key={session.id} 
@@ -165,10 +166,10 @@ const Ledger = () => {
                     }}
                   >
                     <div style={{ display: 'flex', gap: '3rem', alignItems: 'center' }}>
-                      <p className="sans" style={{ fontSize: '0.65rem', fontWeight: 700, opacity: 0.5 }}>{session.time}</p>
+                      <p className="sans" style={{ fontSize: '0.65rem', fontWeight: 700, opacity: 0.5 }}>{session.time || 'TBD'}</p>
                       <div>
-                        <h3 className="serif" style={{ fontSize: '1.25rem' }}>{session.titleKey ? t(session.titleKey) : session.title}</h3>
-                        <p className="sans" style={{ fontSize: '0.75rem', opacity: 0.5 }}>{session.location}</p>
+                        <h3 className="serif" style={{ fontSize: '1.25rem' }}>{t(session.titleKey || '') || session.title || 'Untitled'}</h3>
+                        <p className="sans" style={{ fontSize: '0.75rem', opacity: 0.5 }}>{session.location || 'Unknown'}</p>
                       </div>
                     </div>
                     <button 

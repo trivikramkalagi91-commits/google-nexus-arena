@@ -65,10 +65,13 @@ export const LanguageProvider = ({ children }) => {
   const [lang, setLang] = useState('en');
 
   const t = (key, params = {}) => {
-    let text = translations[lang][key] || key;
-    Object.keys(params).forEach(param => {
-      text = text.replace(`{${param}}`, params[param]);
-    });
+    // CRITICAL FIX: Ensure 'text' is always a string to prevent .replace crashes
+    let text = String(translations[lang][key] || key || '');
+    if (text) {
+      Object.keys(params).forEach(param => {
+        text = text.replace(`{${param}}`, params[param]);
+      });
+    }
     return text;
   };
 
