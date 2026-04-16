@@ -18,7 +18,7 @@ const Navbar = ({ activeTab, setActiveTab }) => {
         style={{ fontSize: '1.25rem', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em' }}
         onClick={() => setActiveTab('dashboard')}
       >
-        NEXUS ANANTA
+        NEXUS ARENA
       </div>
       
       <div className="nav-links">

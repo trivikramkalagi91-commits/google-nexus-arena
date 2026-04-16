@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Navigation, Compass, Info } from 'lucide-react';
+import { MapPin, Navigation, Compass, Users, Clock, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useUser } from '../context/UserContext';
 import { MASTER_PROGRAM } from '../data/event';
@@ -9,18 +9,24 @@ const NexusMap = () => {
   const { t } = useLanguage();
   const { user } = useUser();
   
-  const savedIds = user?.savedSessionIds || ['A01'];
+  const savedIds = user?.savedSessionIds || ['S01'];
   const savedSessions = MASTER_PROGRAM.filter(s => savedIds.includes(s.id));
-  const nextEvent = savedSessions.length > 1 ? savedSessions[1] : savedSessions[0];
+  const nextTarget = savedSessions.length > 0 ? savedSessions[0] : MASTER_PROGRAM[0];
 
-  // Room highlighting state based on the next event
-  const activeRoom = nextEvent?.roomId || 'SABHA';
+  const activeZone = nextTarget?.roomId || 'STADIUM_BOWL';
 
-  const rooms = {
-    SABHA: { x: 400, y: 300, r: 60, label: 'The Sabha' },
-    NB_ALPHA: { x: 250, y: 220, r: 40, label: 'Neighborhood Alpha' },
-    NB_SIGMA: { x: 550, y: 220, r: 40, label: 'Neighborhood Sigma' },
-    SKY_GARDEN: { x: 400, y: 150, r: 30, label: 'Sky Garden' }
+  const zones = {
+    STADIUM_BOWL: { x: 400, y: 300, r: 120, label: 'Main Pitch / Seating', heat: 0.8, wait: '5m' },
+    CONCOURSE_NORTH: { x: 400, y: 120, w: 300, h: 40, label: 'North Concourse', heat: 0.9, wait: '12m' },
+    CONCOURSE_SOUTH: { x: 400, y: 480, w: 300, h: 40, label: 'South Concourse', heat: 0.2, wait: '2m' },
+    SKY_GARDEN: { x: 650, y: 300, r: 50, label: 'Sky Bar / VVIP', heat: 0.4, wait: '4m' },
+    SABHA: { x: 150, y: 300, r: 50, label: 'Fan Zone', heat: 0.6, wait: '8m' }
+  };
+
+  const getHeatColor = (heat) => {
+    if (heat > 0.8) return '#E53E3E'; // Hot / Crowded
+    if (heat > 0.5) return '#D69E2E'; // Medium
+    return '#38A169'; // Cool / Empty
   };
 
   return (
@@ -36,100 +42,118 @@ const NexusMap = () => {
           <h1 className="serif">{t('nexus')}</h1>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <p className="sans" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--accent)', fontWeight: 700 }}>
-            ANANTA DIGITAL TWIN ACTIVE
-          </p>
-          <p className="sans" style={{ fontSize: '0.75rem', marginTop: '0.5rem', opacity: 0.6 }}>
-            Active Wayfinding: <span style={{ fontWeight: 700 }}>{t(nextEvent?.titleKey) || nextEvent?.title || 'Unknown'}</span>
+          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginBottom: '1rem', justifyContent: 'flex-end' }}>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#38A169' }}></div>
+                <span className="sans" style={{ fontSize: '0.6rem', opacity: 0.6 }}>EMPTY</span>
+             </div>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#E53E3E' }}></div>
+                <span className="sans" style={{ fontSize: '0.6rem', opacity: 0.6 }}>CROWDED</span>
+             </div>
+          </div>
+          <p className="sans" style={{ fontSize: '0.75rem', opacity: 0.6 }}>
+            Wayfinding to: <span style={{ fontWeight: 700 }}>{nextTarget?.location}</span>
           </p>
         </div>
       </div>
 
-      <div className="layer-2" style={{ height: '600px', width: '100%', position: 'relative', overflow: 'hidden', border: '1px solid rgba(26,26,26,0.03)', background: '#F9F8F6' }}>
+      <div className="layer-2" style={{ height: '650px', width: '100%', position: 'relative', overflow: 'hidden', border: '1px solid rgba(26,26,26,0.03)', background: '#1A1A1A' }}>
         
-        {/* Architectural Blueprint SVG */}
         <svg viewBox="0 0 800 600" style={{ width: '100%', height: '100%' }}>
-          {/* Grid Lines */}
-          <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(26,26,26,0.03)" strokeWidth="0.5"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-
-          {/* Infinity Loop Paths */}
-          <motion.path 
-            d="M 250 220 Q 400 450 550 220 Q 400 50 250 220" 
-            fill="none" 
-            stroke="rgba(26,26,26,0.1)" 
-            strokeWidth="2"
-            strokeDasharray="10 5"
-          />
-
-          {/* Rooms */}
-          {Object.entries(rooms).map(([id, room]) => {
-            const isActive = activeRoom === id;
+          {/* Pitch Background */}
+          <rect x="300" y="220" width="200" height="160" fill="rgba(56, 161, 105, 0.1)" stroke="rgba(255,255,255,0.05)" />
+          
+          {/* Crowd Heatmap Layers */}
+          {Object.entries(zones).map(([id, zone]) => {
+            const isActive = activeZone === id;
             return (
               <g key={id}>
-                <motion.circle 
-                  cx={room.x} cy={room.y} r={room.r}
-                  fill={isActive ? 'rgba(var(--accent-rgb), 0.05)' : 'white'}
-                  stroke={isActive ? 'var(--accent)' : 'rgba(26,26,26,0.1)'}
-                  strokeWidth={isActive ? 2 : 1}
-                  initial={false}
-                  animate={{ 
-                    scale: isActive ? [1, 1.05, 1] : 1,
-                    opacity: isActive ? 1 : 0.6
-                  }}
-                  transition={{ repeat: Infinity, duration: 3 }}
-                />
+                {zone.r ? (
+                  <motion.circle 
+                    cx={zone.x} cy={zone.y} r={zone.r}
+                    fill="none"
+                    stroke={getHeatColor(zone.heat)}
+                    strokeWidth="20"
+                    opacity="0.15"
+                    animate={{ opacity: [0.1, 0.25, 0.1] }}
+                    transition={{ repeat: Infinity, duration: 4 }}
+                  />
+                ) : (
+                  <motion.rect 
+                    x={zone.x - zone.w/2} y={zone.y - zone.h/2} width={zone.w} height={zone.h}
+                    fill="none"
+                    stroke={getHeatColor(zone.heat)}
+                    strokeWidth="10"
+                    opacity="0.15"
+                    animate={{ opacity: [0.1, 0.25, 0.1] }}
+                    transition={{ repeat: Infinity, duration: 4 }}
+                  />
+                )}
+                
                 {isActive && (
                    <motion.circle 
-                      cx={room.x} cy={room.y} r={room.r + 20}
+                      cx={zone.x} cy={zone.y} r={zone.r || 50}
                       fill="none"
-                      stroke="var(--accent)"
-                      strokeWidth="1"
+                      stroke="#FFF"
+                      strokeWidth="2"
                       initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1.5, opacity: 0 }}
+                      animate={{ scale: 1.3, opacity: 0 }}
                       transition={{ repeat: Infinity, duration: 2 }}
                    />
                 )}
+                
                 <text 
-                  x={room.x} y={room.y + room.r + 20} 
+                  x={zone.x} y={zone.y + (zone.r || 30) + 20} 
                   textAnchor="middle" 
                   className="sans" 
-                  style={{ fontSize: '0.65rem', fontWeight: 600, opacity: isActive ? 1 : 0.3 }}
+                  style={{ fontSize: '0.65rem', fontWeight: 600, fill: '#FFF', opacity: 0.4 }}
                 >
-                  {room.label.toUpperCase()}
+                  {zone.label.toUpperCase()} ({zone.wait})
                 </text>
               </g>
             );
           })}
-
-          {/* User Location Indicator (Mocked specifically for Ananta Campus) */}
-          <motion.g initial={{ x: 380, y: 350 }}>
-            <circle r="4" fill="var(--accent)" />
-            <circle r="12" fill="none" stroke="var(--accent)" strokeWidth="1" opacity="0.3" />
-          </motion.g>
         </svg>
 
-        {/* Legend / Info Overlay */}
-        <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', zIndex: 10 }}>
-          <div className="glass" style={{ padding: '1rem', border: '1px solid rgba(26,26,26,0.1)', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <Compass size={14} opacity={0.6} />
-            <span className="sans" style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.05em' }}>ZONE: {nextEvent?.location || 'General Campus'}</span>
+        {/* Live Crowd Alert */}
+        <div style={{ position: 'absolute', top: '2rem', right: '2rem', zIndex: 10 }}>
+          <motion.div 
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="glass" 
+            style={{ padding: '1rem 1.5rem', border: '1px solid #E53E3E', background: 'rgba(229, 62, 62, 0.1)', color: '#FFF' }}
+          >
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <AlertTriangle size={18} color="#E53E3E" />
+              <div>
+                <span className="sans" style={{ fontSize: '0.7rem', fontWeight: 700 }}>BOTTLE-NECK ALERT: GATE A</span>
+                <p className="sans" style={{ fontSize: '0.6rem', opacity: 0.7, marginTop: '0.25rem' }}>Use South Concourse for 10m faster entry.</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Floating Controls */}
+        <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', zIndex: 10, display: 'flex', gap: '1rem' }}>
+          <div className="glass" style={{ padding: '0.75rem 1.25rem', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.4)', color: '#FFF', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <Users size={14} opacity={0.6} />
+            <span className="sans" style={{ fontSize: '0.6rem', fontWeight: 700 }}>GROUP (4 ON-SITE)</span>
+          </div>
+          <div className="glass" style={{ padding: '0.75rem 1.25rem', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.4)', color: '#FFF', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <Clock size={14} opacity={0.6} />
+            <span className="sans" style={{ fontSize: '0.6rem', fontWeight: 700 }}>NEXT EVENT: {nextTarget?.time}</span>
           </div>
         </div>
 
-        {/* You Are Here Pin */}
         <motion.div 
-          style={{ position: 'absolute', top: '56%', left: '46%', zIndex: 100 }}
+          style={{ position: 'absolute', top: '48%', left: '46%', zIndex: 100 }}
         >
           <div className="pulse-container">
-            <div className="pulse-ring"></div>
-            <div className="glass" style={{ padding: '0.75rem 1.5rem', border: '1px solid var(--accent)', display: 'flex', gap: '0.75rem', alignItems: 'center', background: 'rgba(255,255,255,0.98)' }}>
-              <MapPin size={14} color="var(--accent)" />
-              <span className="serif" style={{ fontSize: '0.75rem', fontWeight: 700 }}>{t('youAreHere')}</span>
+            <div className="pulse-ring" style={{ borderColor: '#FFF' }}></div>
+            <div className="glass" style={{ padding: '0.75rem 1.5rem', border: '1px solid #FFF', display: 'flex', gap: '0.75rem', alignItems: 'center', background: 'rgba(0,0,0,0.8)', color: '#FFF' }}>
+              <MapPin size={14} color="#FFF" />
+              <span className="serif" style={{ fontSize: '0.75rem', fontWeight: 700 }}>YOU</span>
             </div>
           </div>
         </motion.div>
@@ -139,7 +163,7 @@ const NexusMap = () => {
         <div style={{ flex: 1 }}>
           <h3 className="serif" style={{ marginBottom: '1.5rem' }}>{t('concierge')}</h3>
           <p className="serif" style={{ fontSize: '1.5rem', lineHeight: '1.6', fontStyle: 'italic' }}>
-            {`"${user.name}, the Google Ananta Campus is fully synchronized to your agenda. I have highlighted '${t(nextEvent?.titleKey || '') || nextEvent?.title}' in ${nextEvent?.location || 'the digital twin'} for you."`}
+            {`"${user.name}, Nexus sensors indicate heavy flow in the North Concourse. If you're heading to ${nextTarget?.location}, I suggest taking the South stairs to avoid the 12-minute queue."`}
           </p>
         </div>
       </div>

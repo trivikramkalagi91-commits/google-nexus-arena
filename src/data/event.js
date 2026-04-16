@@ -1,63 +1,55 @@
 export const MASTER_PROGRAM = [
   {
-    id: 'A01',
-    time: '09:00 AM',
-    isoDate: '20260416T090000',
+    id: 'S01',
+    time: '04:00 PM',
+    isoDate: '20260416T160000',
     isoDuration: '010000',
     titleKey: 'temporalLedger',
-    location: 'The Sabha (Atrium)',
-    roomId: 'SABHA',
-    speaker: 'Google Nexus Team',
-    type: 'Keynote',
-    coordinates: { lat: 12.9141, lng: 77.6329 } // Google Bangalore Ananta
+    location: 'Main Pitch / Section 100',
+    roomId: 'STADIUM_BOWL',
+    speaker: 'Tournament Staff',
+    type: 'Event',
+    coordinates: { lat: 12.9141, lng: 77.6329 },
+    waitMinutes: 0
   },
   {
-    id: 'A02',
-    time: '10:30 AM',
-    isoDate: '20260416T103000',
+    id: 'S02',
+    time: '05:30 PM',
+    isoDate: '20260416T173000',
     isoDuration: '010000',
     titleKey: 'ethicTitle',
-    location: 'Neighborhood Alpha',
-    roomId: 'NB_ALPHA',
-    speaker: 'Sundar Pichai (via Gemini AI)',
-    type: 'Innovation',
-    coordinates: { lat: 12.9145, lng: 77.6335 }
+    location: 'Gate 4 Concourse',
+    roomId: 'CONCOURSE_NORTH',
+    speaker: 'Crowd Control AI',
+    type: 'Security',
+    coordinates: { lat: 12.9145, lng: 77.6335 },
+    waitMinutes: 12
   },
   {
-    id: 'A03',
-    time: '10:30 AM',
-    isoDate: '20260416T103000',
+    id: 'S03',
+    time: '06:00 PM',
+    isoDate: '20260416T180000',
     isoDuration: '010000',
     titleKey: 'resonanceTitle',
-    location: 'Neighborhood Sigma',
-    roomId: 'NB_SIGMA',
-    speaker: 'Matthias Duarte',
-    type: 'Design',
-    coordinates: { lat: 12.9138, lng: 77.6325 }
+    location: 'Sky Bar / Section 200',
+    roomId: 'SKY_GARDEN',
+    speaker: 'Entertainment Hub',
+    type: 'Social',
+    coordinates: { lat: 12.9138, lng: 77.6325 },
+    waitMinutes: 5
   },
   {
-    id: 'A04',
-    time: '12:00 PM',
-    isoDate: '20260416T120000',
+    id: 'S04',
+    time: '07:30 PM',
+    isoDate: '20260416T193000',
     isoDuration: '003000',
     titleKey: 'techCheck',
-    location: 'The Sabha',
+    location: 'Main Concourse South',
     roomId: 'SABHA',
-    speaker: 'Developer Relations',
-    type: 'Briefing',
-    coordinates: { lat: 12.9141, lng: 77.6329 }
-  },
-  {
-    id: 'A05',
-    time: '02:00 PM',
-    isoDate: '20260416T140000',
-    isoDuration: '020000',
-    titleKey: 'spatialNav',
-    location: 'Sky Garden Loop',
-    roomId: 'SKY_GARDEN',
-    speaker: 'Campus Architects',
-    type: 'Tour',
-    coordinates: { lat: 12.9145, lng: 77.6340 }
+    speaker: 'Food & Beverage',
+    type: 'Concession',
+    coordinates: { lat: 12.9141, lng: 77.6329 },
+    waitMinutes: 20
   }
 ];
 

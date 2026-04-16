@@ -1,111 +1,121 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Clock } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useUser } from '../context/UserContext';
-import { EVENT_DATA } from '../data/event';
+import { Clock, Navigation, Zap, Users } from 'lucide-react';
 
 const Dashboard = () => {
   const { t } = useLanguage();
   const { user } = useUser();
   const isSpeaker = user.role === 'speaker';
 
-  // Find the 'Now' session
-  const nowSession = EVENT_DATA[1];
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.19, 1, 0.22, 1] } }
+  };
 
   return (
-    <div className="container" style={{ paddingBottom: '8rem' }}>
-      <div className="dashboard-grid">
-        
-        {/* area: greeting */}
-        <motion.div 
-          className="grid-greeting"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
-        >
-          <h3 className="serif" style={{ marginBottom: '1.5rem' }}>
-            {isSpeaker ? t('speakerAccess') : t('attendeeAccess')}
-          </h3>
-          <h1 className="serif">{t('greeting', { name: user.name })}</h1>
-          <p className="sans" style={{ marginTop: '2rem', maxWidth: '500px', fontSize: '1.25rem' }}>
-            {isSpeaker ? t('speakerGreeting') : t('attendeeGreeting')}
-          </p>
-        </motion.div>
+    <motion.div 
+      className="container"
+      variants={container}
+      initial="hidden"
+      animate="show"
+      style={{ paddingBottom: '8rem' }}
+    >
+      <motion.div variants={item} style={{ marginBottom: '6rem' }}>
+        <h3 className="serif" style={{ marginBottom: '1.5rem', opacity: 0.6 }}>{t('dashboard')}</h3>
+        <h1 className="serif" style={{ fontSize: '5rem', lineHeight: '1', marginBottom: '2rem' }}>
+          {t('greeting', { name: user.name })}
+        </h1>
+        <p className="serif" style={{ fontSize: '1.75rem', maxWidth: '800px', lineHeight: '1.5', opacity: 0.8 }}>
+          {isSpeaker ? t('speakerGreeting') : t('attendeeGreeting')}
+        </p>
+      </motion.div>
 
-        {/* area: now */}
+      <div className="bento-grid">
+        {/* Live Arena Status */}
         <motion.div 
-          className="grid-now bento-card layer-2"
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5, delay: 0.2, ease: [0.19, 1, 0.22, 1] }}
+          variants={item} 
+          className="bento-card layer-1" 
+          style={{ gridColumn: 'span 8', padding: '3rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <h3 className="serif">{t('now')}</h3>
-            <Clock size={16} opacity={0.4} />
+            <div>
+              <div className="badge" style={{ background: 'var(--accent)', color: '#FFF' }}>{t('now')}</div>
+              <h2 className="serif" style={{ fontSize: '2.5rem', marginTop: '1.5rem' }}>{t('ethicTitle')}</h2>
+              <p className="sans" style={{ fontSize: '0.8rem', marginTop: '0.5rem', opacity: 0.6 }}>{t('venue')}</p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <Clock size={20} opacity={0.3} />
+              <p className="sans" style={{ fontSize: '0.75rem', marginTop: '0.5rem', fontWeight: 700 }}>MATCH STARTED: 12'</p>
+            </div>
           </div>
-          <div style={{ marginTop: 'auto' }}>
-            <h2 className="serif" style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>
-              {isSpeaker ? t('techCheck') : t('ethicTitle')}
-            </h2>
-            <p className="sans" style={{ fontSize: '0.875rem' }}>
-              {nowSession.location} • {nowSession.speaker}
-            </p>
-          </div>
-          <motion.div 
-            style={{ position: 'absolute', bottom: '2rem', right: '2rem' }}
-            whileHover={{ x: 5, y: -5 }}
-          >
-            <ArrowUpRight size={24} />
-          </motion.div>
-        </motion.div>
-
-        {/* area: ledger */}
-        <motion.div 
-          className="grid-ledger bento-card layer-3"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.8, delay: 0.4, ease: [0.19, 1, 0.22, 1] }}
-        >
-          <h3 className="serif" style={{ marginBottom: '3rem' }}>{t('nextOnLedger')}</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-            {EVENT_DATA.slice(1).map((item) => (
-              <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid rgba(26,26,26,0.05)', paddingBottom: '1rem' }}>
-                <div>
-                  <p className="sans" style={{ fontSize: '0.65rem', fontWeight: 600, opacity: 0.5 }}>{item.time}</p>
-                  <h2 className="serif" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>{t(item.titleKey)}</h2>
-                </div>
-                <p className="sans" style={{ fontSize: '0.75rem' }}>{item.location.split('•')[0]}</p>
-              </div>
-            ))}
+          <div style={{ display: 'flex', gap: '4rem', marginTop: '4rem' }}>
+            <div>
+              <p className="sans subtitle">CROWD STATUS</p>
+              <p className="serif" style={{ fontSize: '1.5rem' }}>Dynamic Flow Active</p>
+            </div>
+            <div>
+              <p className="sans subtitle">WAIT TIME (GATE B)</p>
+              <p className="serif" style={{ fontSize: '1.5rem' }}>2 Minutes</p>
+            </div>
           </div>
         </motion.div>
 
-        {/* area: concierge */}
+        {/* Real-time Assistant */}
         <motion.div 
-          className="grid-concierge bento-card layer-1"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1.5, delay: 0.6, ease: [0.19, 1, 0.22, 1] }}
-          style={{ border: '1px solid rgba(26,26,26,0.05)' }}
+          variants={item} 
+          className="bento-card layer-2 accent" 
+          style={{ gridColumn: 'span 4', padding: '3rem', color: '#FFF' }}
         >
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '2.5rem' }}>
-            <div style={{ width: '8px', height: '8px', background: 'var(--accent)', borderRadius: '50%' }}></div>
-            <h3 className="serif">{t('concierge')}</h3>
-          </div>
-          <p className="serif" style={{ fontSize: '1.5rem', fontStyle: 'italic', color: '#1A1A1A', lineHeight: '1.6' }}>
+          <p className="sans" style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.2em', marginBottom: '2rem' }}>{t('concierge')}</p>
+          <p className="serif" style={{ fontSize: '1.25rem', lineHeight: '1.6', marginBottom: '3rem' }}>
             {isSpeaker ? t('speakerAI', { name: user.name }) : t('attendeeAI', { name: user.name })}
           </p>
-          <div style={{ marginTop: 'auto', display: 'flex', gap: '2rem', paddingTop: '3rem' }}>
-            <button className="btn-primary" onClick={() => alert('Logic Triggered: Response sent to Concierge.')}>
-              {isSpeaker ? t('confirm') : t('reserve')}
-            </button>
-            <button className="sans" style={{ background: 'none', border: 'none', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', opacity: 0.4 }}>{t('pass')}</button>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button className="btn-secondary">{t('confirm')}</button>
+            <button className="btn-secondary" style={{ opacity: 0.6 }}>{t('pass')}</button>
           </div>
         </motion.div>
 
+        {/* Group Beacon */}
+        <motion.div 
+          variants={item} 
+          className="bento-card layer-1" 
+          style={{ gridColumn: 'span 12', padding: '3rem', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4rem' }}
+        >
+          <div>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <Users size={16} color="var(--accent)" />
+              <p className="sans subtitle" style={{ marginBottom: 0 }}>SECTION 102 SYNC</p>
+            </div>
+            <p className="serif" style={{ fontSize: '1.25rem' }}>4 Friends Tracking</p>
+          </div>
+          <div>
+            <p className="sans subtitle">NEAREST EXIT</p>
+            <p className="serif" style={{ fontSize: '1.25rem' }}>South Ramp (320m)</p>
+          </div>
+          <div>
+            <p className="sans subtitle">HALFTIME ORDER</p>
+            <p className="serif" style={{ fontSize: '1.25rem' }}>Ready at Concession 2</p>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+            <button className="btn-primary">{t('reserve')}</button>
+          </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
