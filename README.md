@@ -1,38 +1,45 @@
-# Aether | Ambient Event Experience
+# 🏟️ Google Nexus Arena | IPL 2026 Intelligence Hub
 
-Aether is an ultra-premium, AI-driven web application designed to redefine the **Physical Event Experience**. Moving away from common high-vibrancy event apps, Aether embraces **"The Silent Gallery"** — a professional, minimalist editorial aesthetic inspired by architecture and luxury fashion.
+An AI-powered, production-grade Smart Stadium companion designed to transform the attendee experience through real-time intelligence, dynamic personalization, and immersive digital twins.
 
-## 🏛️ The Vision: Quiet Luxury
-Aether acts as an **Ambient Event OS**. It doesn't just display a schedule; it layeres a digital concierge over the physical venue, prioritizing content, clarity, and "zero-click" interactions.
+## 🚀 Vision
+Built as part of the **Google Antigravity Engineering Challenge**, Nexus Arena solves the "Last Mile" problem of stadium logistics. It moves beyond static schedules to provide a living, breathing digital layer for any venue in the IPL 2026 roster.
 
-### Key Features
-- **Ambient Dashboard**: A personalized, bento-grid interface that anticipates attendee needs based on time and context.
-- **The Nexus (Spatial Map)**: An abstracted architectural floor plan that simplifies complex venues into a sophisticated navigation layer.
-- **Proactive Concierge**: A simulated Gemini-powered AI layer that offers context-aware suggestions (e.g., "Would you like a quiet space for your briefing?").
-- **Spatial Resonance**: Proximity-based logic that highlights networking opportunities and nearby facilities automatically.
-- **The Ledger**: A high-end event timeline synchronized with core event data (Sync to Google Calendar placeholder).
+## ✨ Key Features
 
-## 🛠️ Technology Stack
-- **Core**: React + Vite
-- **Styling**: Vanilla CSS (The Silent Gallery Design System)
+### 👤 1. Full-Cycle Personalization
+- **Dynamic Onboarding**: Replaces hardcoded entries with a multi-step identity flow (Fan/Staff).
+- **Ticket Intelligence**: Persists name, gate, and seat data to customize every recommendation.
+
+### 🗺️ 2. Dynamic Stadium Geometry Engine
+- **Venue Agnostic**: Automatically renders circular, oval, or rectangular stadium layouts based on the match calendar.
+- **Digital Twin**: Interactive SVG maps with live sector-level crowd density heatmaps.
+
+### 🧭 3. Turn-by-Turn Smart Navigation
+- **Personalized Steps**: Guidance explicitly references the user's entry gate and seat.
+- **AI Concierge**: Proactive voice and text advice for bottlenecks and amenity wait times.
+
+### 🚄 4. Service Interaction
+- **Nexus Pay Simulation**: Pre-order food from the "Wait-Time Ledger" to skip at-seat queues.
+- **Crowdsourced Intelligence**: Users can report local bottlenecks to improve the global heatmap.
+
+### 📱 5. Production Ready
+- **PWA Support**: Installable as a standalone app on mobile devices.
+- **Containerized**: Cloud-ready Docker configuration for Google Cloud Run deployment.
+
+## 🛠️ Tech Stack
+- **Frontend**: React 18 + Vite (Ultralight & Performant)
+- **Styling**: Material Design 3 (Vanilla CSS)
+- **Animation**: Framer Motion (Fluid UI transitions)
 - **Icons**: Lucide React
-- **Animations**: Framer Motion
-- **Services**: Built with Google Maps, Calendar, and Translate integration logic in mind.
+- **Deployment**: Docker + Nginx (Cloud Run optimized)
 
-## 🚀 How to Run
-1. Clone the repository.
-2. Run `npm install`.
-3. Start the experience with `npm run dev`.
+## 📦 Deployment to Cloud Run
+1. Ensure `gcloud` CLI is installed.
+2. Run the following command in the root directory:
+   ```bash
+   gcloud run deploy nexus-arena --source .
+   ```
 
-## 🧠 Approach & Logic
-The solution is built on two pillars: **Proactive Intelligence** and **Architectural Clarity**. 
-1. **Intelligence**: The app proactively pushes notifications ("Spatial Resonance") based on user context rather than waiting for user input.
-2. **Clarity**: Using "Tonal Layering" instead of heavy shadows or divider lines, the UI maintains a professional, high-end feel that reduces cognitive load for attendees in high-energy physical environments.
-
-## ⚖️ Assumptions
-- Attendees prefer "information at a glance" over complex menu diving.
-- High-end events (Summits, Fashion Weeks, Gallery Openings) benefit from a "Quiet" aesthetic that doesn't compete with the physical environment.
-- Proximity data (mocked) is available via standard mobile browser APIs.
-
----
-*Developed for the Google Antigravity Challenge - 2026*
+## 🤝 Acknowledgments
+Developed with **Google Antigravity**, pushing the boundaries of autonomous coding and agentic design.

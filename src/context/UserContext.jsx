@@ -5,23 +5,27 @@ const UserContext = createContext();
 const initialState = {
   name: '',
   role: '',
+  ticket: {
+    gate: '',
+    section: '',
+    seat: ''
+  },
   hasOnboarded: false,
-  savedSessionIds: ['A01']
+  savedSessionIds: []
 };
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(initialState);
 
   useEffect(() => {
-    const saved = localStorage.getItem('aether_user');
+    const saved = localStorage.getItem('nexus_user');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // CRITICAL BUG FIX: Merge parsed state with initial state to avoid missing fields like savedSessionIds
         setUser({
           ...initialState,
           ...parsed,
-          savedSessionIds: parsed.savedSessionIds || ['A01']
+          hasOnboarded: !!parsed.name // If name exists, they are onboarded
         });
       } catch (e) {
         console.error("Failed to parse user data", e);
@@ -29,35 +33,23 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
-  const onboardUser = (name, role) => {
-    const newUser = { ...user, name, role, hasOnboarded: true };
+  const onboard = (data) => {
+    const newUser = { 
+      ...user, 
+      ...data, 
+      hasOnboarded: true 
+    };
     setUser(newUser);
-    localStorage.setItem('aether_user', JSON.stringify(newUser));
-  };
-
-  const toggleSession = (id) => {
-    setUser(prev => {
-      const currentIds = prev.savedSessionIds || ['A01'];
-      const isSaved = currentIds.includes(id);
-      const newIds = isSaved 
-        ? currentIds.filter(sid => sid !== id)
-        : [...currentIds, id];
-      
-      if (!newIds.includes('A01')) newIds.push('A01');
-
-      const updated = { ...prev, savedSessionIds: newIds };
-      localStorage.setItem('aether_user', JSON.stringify(updated));
-      return updated;
-    });
+    localStorage.setItem('nexus_user', JSON.stringify(newUser));
   };
 
   const logout = () => {
-    localStorage.removeItem('aether_user');
+    localStorage.removeItem('nexus_user');
     setUser(initialState);
   };
 
   return (
-    <UserContext.Provider value={{ user, onboardUser, toggleSession, logout }}>
+    <UserContext.Provider value={{ user, onboard, logout }}>
       {children}
     </UserContext.Provider>
   );
