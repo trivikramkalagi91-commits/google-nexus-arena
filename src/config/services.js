@@ -1,4 +1,4 @@
-export const GOOGLE_MAPS_API_KEY = 'AIzaSyCoWg5fzpl7cqOv6OLz_0O9T7Ti4gErSmQ';
+export const GOOGLE_MAPS_API_KEY = 'Your API Key';
 
 export const EVENT_CONFIG = {
   title: 'Aether Physical Summit 2026',
