@@ -34,11 +34,18 @@ Built as part of the **Google Antigravity Engineering Challenge**, Nexus Arena s
 - **Icons**: Lucide React
 - **Deployment**: Docker + Nginx (Cloud Run optimized)
 
-## 📦 Deployment to Cloud Run
+## 📦 Deployment
+This project is optimized for both **Google Cloud Run** and **GitHub Pages**.
+
+### 🌐 Live Demo
+You can view the live technical demo here:  
+**[google-nexus-arena Live](https://trivikramkalagi91-commits.github.io/google-nexus-arena/)**
+
+### 🐳 Google Cloud Run (Production)
 1. Ensure `gcloud` CLI is installed.
 2. Run the following command in the root directory:
    ```bash
-   gcloud run deploy nexus-arena --source .
+   gcloud run deploy google-nexus-arena --source .
    ```
 
 ## 🤝 Acknowledgments
